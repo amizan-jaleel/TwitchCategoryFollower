@@ -1,0 +1,14 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Map GET requests to /api/items to the getItems method in ApiController
+GET     /api/items              controllers.ApiController.getItems
+
+# Map GET requests to /api/items/:id to the getItem method, passing the id
+# The :id part defines a path parameter that Play extracts
+GET     /api/items/:id          controllers.ApiController.getItem(id: Int)
+
+
+# Map static assets (like index.html, compiled JS) from the public folder
+GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
