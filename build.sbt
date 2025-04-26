@@ -104,19 +104,19 @@ lazy val server = (project in file("server"))
 // Client project (Scala.js)
 lazy val client = (project in file("client"))
   .enablePlugins(ScalaJSPlugin)
-  .dependsOn(sharedJS)
+  .dependsOn(sharedJS) // Depends on shared code (includes DataModel.Item + Circe implicits)
   .settings(
     commonSettings,
     name := "client",
-    scalaJSUseMainModuleInitializer := true,
-    Compile / mainClass := Some("com.example.client.MainApp"),
-    // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }, // Optional: Set module kind
-
+    scalaJSUseMainModuleInitializer := true, // Must be true to run main method
+    Compile / mainClass := Some("org.amizanjaleel.client.MainApp"), // Set your main class
     libraryDependencies ++= Seq(
-      // Add Scala.js specific libs like UI frameworks here
-      // "com.raquo" %%% "laminar" % "17.0.0" // Check latest Laminar for Scala 2.13
+      "org.scala-js" %%% "scalajs-dom" % "2.8.0", // For DOM manipulation and Ajax
+      // Circe dependencies are likely inherited via sharedJS if defined there with %%%
+      // but add parser explicitly if not already included:
+      "io.circe" %%% "circe-parser" % "0.14.1" // Needed for decode() - align version
     ),
-    // Define output paths for compiled JS (relative to project root)
+    // Configure output JS file path (used by server copy task and index.html)
     Compile / fastOptJS / artifactPath := (ThisBuild / baseDirectory).value / "server" / "public" / "javascripts" / s"${name.value}-fastopt.js",
     Compile / fullOptJS / artifactPath := (ThisBuild / baseDirectory).value / "server" / "public" / "javascripts" / s"${name.value}-opt.js",
 

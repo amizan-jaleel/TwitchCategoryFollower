@@ -45,3 +45,4 @@ build/
 
 ### Scala ###
 .bsp/
+/server/public/javascripts/client-fastopt.js

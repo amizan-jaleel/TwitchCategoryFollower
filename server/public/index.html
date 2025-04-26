@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>My Scala App</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #items-container { margin-top: 15px; border: 1px solid #ccc; padding: 10px; min-height: 50px; }
+        #items-container ul { list-style: none; padding-left: 0; }
+        #items-container li { border-bottom: 1px dashed #eee; padding: 5px 0; }
+        #items-container li:last-child { border-bottom: none; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>Item List (Frontend via Scala.js)</h1>
+
+<div id="items-container">
+    <p>Loading items from backend...</p>
+</div>
+
+<script src="assets/javascripts/client-fastopt.js"></script>
+
+</body>
+</html>
