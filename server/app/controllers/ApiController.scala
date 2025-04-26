@@ -1,51 +1,46 @@
+// server/app/controllers/ApiController.scala
 package controllers
 
 import org.amizanjaleel.DataModel.Item
 
 import javax.inject._
 import play.api.mvc._
-import play.api.libs.json._ // Play's JSON library
 
+// Import Circe <-> Play integration helper and Circe syntax
+import play.api.libs.circe.Circe // Provided by the play-circe library
+import io.circe.syntax._        // Provides the .asJson extension method
+import io.circe.Json            // For creating custom JSON objects like error messages
 
-@Singleton // Tells Play's dependency injection to create only one instance
-class ApiController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+@Singleton
+class ApiController @Inject()(val controllerComponents: ControllerComponents)
+  extends BaseController
+    with Circe { // <<< Mix in the Circe trait
 
-  // Define how to convert our Item case class to JSON using Play JSON
-  // This implicit needs to be in scope where Json.toJson is called.
-  implicit val itemWrites: Writes[Item] = Json.writes[Item]
-  // Alternatively:
-  // implicit val itemWrites: Writes[Item] = (
-  //   (JsPath \ "id").write[Int] and
-  //   (JsPath \ "name").write[String] and
-  //   (JsPath \ "description").write[String]
-  // )(unlift(Item.unapply))
+  // --- NO MORE Play-JSON implicits needed here ---
+  // val itemWrites = ... (REMOVE this)
 
-  // Sample in-memory data
   private val sampleItems = List(
     Item(1, "Widget", "A useful widget."),
     Item(2, "Gadget", "A fancy gadget."),
-    Item(3, "Thingamajig", "You know, that thing.")
+    Item(4, "Thingamajig", "You know, that thing.")
   )
 
-  /**
-   * An Action that returns a list of items as JSON.
-   * Mapped via the routes file.
-   */
+  // Action to get all items
   def getItems: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    // Convert the list of items to JSON
-    val jsonResponse = Json.toJson(sampleItems)
-
-    // Return an HTTP 200 OK status with the JSON payload
-    Ok(jsonResponse)
+    // Convert List[Item] to circe.Json using the implicit encoder from Item companion
+    // The Circe trait handles sending circe.Json as an HTTP response
+    Ok(sampleItems.asJson)
   }
 
-  /**
-   * Example of an endpoint to get a single item by ID (demonstrates path parameters)
-   */
+  // Action to get a single item by ID
   def getItem(id: Int): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     sampleItems.find(_.id == id) match {
-      case Some(item) => Ok(Json.toJson(item)) // Found: return 200 OK with item JSON
-      case None       => NotFound(Json.obj("error" -> s"Item with id $id not found")) // Not Found: return 404 Not Found
+      case Some(item) =>
+        // Convert found Item to circe.Json and return Ok
+        Ok(item.asJson)
+      case None =>
+        // Create a circe.Json error object and return NotFound
+        NotFound(Json.obj("error" -> s"Item with id $id not found".asJson))
     }
   }
 }

@@ -1,9 +1,9 @@
-import sbt.Keys._
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
+import sbt.Keys.*
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.*
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.*
 import play.sbt.PlayImport.ws // If you need Play WS client
-import play.sbt.routes.RoutesKeys._ // For Play routes compiler
-import sbt._
+import play.sbt.routes.RoutesKeys.* // For Play routes compiler
+import sbt.*
 
 // --- Common Settings ---
 val scala2Version = "2.13.16" // <-- UPDATED Scala version
@@ -76,10 +76,11 @@ lazy val server = (project in file("server"))
     name := "server",
     libraryDependencies ++= Seq(
       guice,
-      ws % Test
+      ws % Test,
       // Add other backend dependencies
       // "com.typesafe.play" %% "play-json" % "2.9.4" // Or check latest 2.9.x/2.10.x compatible with Play 2.8
-    ),
+      "com.dripower" %% "play-circe" % "2814.1", // Check latest play-circe version matching your Play & Circe versions
+),
     routesGenerator := InjectedRoutesGenerator,
     // Task to copy Scala.js output to Play's public assets folder
     Compile / resourceGenerators += Def.task {
